@@ -62,8 +62,7 @@ body {
 
 .cursor {
   display: inline-block;
-  /* color: var(--fg); */
-  color: rgba(34, 211, 238);
+  color: var(--fg);
   font-weight: 700;
   animation: blink 0.95s step-end infinite;
   /* margin-left: 1px; */
