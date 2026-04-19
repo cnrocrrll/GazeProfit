@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GazeProfit</title>
+  <link rel="icon" type="image/svg+xml" href="images/2.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="typewriter-wrap">
+      <span id="typewriter"></span><span class="cursor">|</span>
+    </div>
+
+    <div class="buttons">
+      <a href="https://forms.google.com" target="_blank" rel="noopener noreferrer" class="btn">
+        Apply to Join the Team
+      </a>
+      <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="btn">
+        Pre-order Package
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Logo slot: replace logo.png with your 1024x1024 image file -->
+  <img src="images/3.png" alt="GazeProfit" class="logo" />
+
+  <footer>
+    &copy; <span id="year"></span> GazeProfit. All rights reserved.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const phrases = ["GazeProfit", "Coming soon."];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    const el = document.getElementById("typewriter");
+
+    const WRITE_SPEED  = 90;
+    const DELETE_SPEED = 55;
+    const PAUSE_AFTER_WRITE  = 1800;
+    const PAUSE_AFTER_DELETE = 400;
+
+    function tick() {
+      const current = phrases[phraseIndex];
+
+      if (!isDeleting) {
+        charIndex++;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+          isDeleting = true;
+          setTimeout(tick, PAUSE_AFTER_WRITE);
+          return;
+        }
+        setTimeout(tick, WRITE_SPEED);
+      } else {
+        charIndex--;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === 0) {
+          isDeleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          setTimeout(tick, PAUSE_AFTER_DELETE);
+          return;
+        }
+        setTimeout(tick, DELETE_SPEED);
+      }
+    }
+
+    setTimeout(tick, 600);
+  </script>
+
+</body>
+</html>
