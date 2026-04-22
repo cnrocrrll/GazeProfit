@@ -108,6 +108,28 @@ body {
   background: rgba(34, 211, 238, 0.05);
 }
 
+.btn-preorder {
+  color: rgba(253, 253, 253, 0.9);
+  border-color: rgba(253, 253, 253, 0.5);
+  background: linear-gradient(to right, transparent 0%, transparent 100%);
+  background-size: 200% 100%;
+  background-position: right;
+  transition:
+    color 0.35s ease,
+    border-color 0.35s ease,
+    background-position 0.35s ease,
+    transform 0.25s ease;
+}
+
+.btn-preorder:hover {
+  color: rgba(253, 253, 253, 0.9);
+  border-color: rgba(34, 211, 238, 0.6);
+  background: linear-gradient(to right, rgba(34, 211, 238, 0.12) 0%, transparent 100%);
+  background-size: 200% 100%;
+  background-position: left;
+  transform: scale(1.04);
+}
+
 /* ── Footer ── */
 
 footer {
