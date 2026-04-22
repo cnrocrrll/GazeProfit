@@ -109,24 +109,19 @@ body {
 }
 
 .btn-preorder {
-  color: rgba(253, 253, 253, 0.9);
-  border-color: rgba(253, 253, 253, 0.5);
-  background: linear-gradient(to right, transparent 0%, transparent 100%);
-  background-size: 200% 100%;
-  background-position: right;
+  color: #0a0a0a;
+  border-color: rgba(253, 253, 253, 0.9);
+  background: #fdfdfd;
   transition:
-    color 0.35s ease,
+    background 0.35s ease,
     border-color 0.35s ease,
-    background-position 0.35s ease,
     transform 0.25s ease;
 }
 
 .btn-preorder:hover {
-  color: rgba(253, 253, 253, 0.9);
+  color: #0a0a0a;
   border-color: rgba(34, 211, 238, 0.6);
-  background: linear-gradient(to right, rgba(34, 211, 238, 0.12) 0%, transparent 100%);
-  background-size: 200% 100%;
-  background-position: left;
+  background: linear-gradient(to right, rgba(34, 211, 238, 0.35) 0%, #fdfdfd 100%);
   transform: scale(1.04);
 }
 
