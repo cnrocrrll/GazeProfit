@@ -79,7 +79,7 @@ body {
 .buttons {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 25px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -109,7 +109,7 @@ body {
 }
 
 .btn.btn-preorder {
-  color: transparent;
+  color: #0a0a0a;
   border-color: rgba(253, 253, 253, 0.9);
   background: #fdfdfd;
   transition:
@@ -119,8 +119,8 @@ body {
 }
 
 .btn.btn-preorder:hover {
-  color: transparent;
-  border-color: rgba(34, 211, 238, 0.6);
+  color: #0a0a0a;
+  /* border-color: rgba(34, 211, 238, 0.6); */
   background: linear-gradient(to right, rgba(34, 211, 238, 0.35) 0%, #fdfdfd 100%);
   transform: scale(1.04);
 }
