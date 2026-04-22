@@ -108,7 +108,7 @@ body {
   background: rgba(34, 211, 238, 0.05);
 }
 
-.btn-preorder {
+.btn.btn-preorder {
   color: transparent;
   border-color: rgba(253, 253, 253, 0.9);
   background: #fdfdfd;
@@ -118,7 +118,7 @@ body {
     transform 0.25s ease;
 }
 
-.btn-preorder:hover {
+.btn.btn-preorder:hover {
   color: transparent;
   border-color: rgba(34, 211, 238, 0.6);
   background: linear-gradient(to right, rgba(34, 211, 238, 0.35) 0%, #fdfdfd 100%);
