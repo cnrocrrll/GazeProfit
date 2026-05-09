@@ -49,11 +49,25 @@
       <a href="https://www.instagram.com/gazeprofithq/" target="_blank" rel="noopener noreferrer" class="btn btn-preorder">
         Pre-order Package
       </a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmh3_I3DSJnK4ITfkiA6fKgQJyaVMbOGMLihje486pNcDsng/viewform?usp=sharing&ouid=107553971426462264006" target="_blank" class="btn">
+      <!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmh3_I3DSJnK4ITfkiA6fKgQJyaVMbOGMLihje486pNcDsng/viewform?usp=sharing&ouid=107553971426462264006" target="_blank" class="btn">
         Join the Team
+      </a> -->
+      <a href="#"
+         class="btn"
+         onclick="showCapacityMessage(event)">
+         Join the Team
       </a>
+      <p id="capacity-message" style="display:none; margin-top:10px; color:#ff4d4d; font-size:14px;">
+        Team capacity reached.
+      </p>
+      <script>
+        function showCapacityMessage(event) {
+          event.preventDefault();
+          const message = document.getElementById("capacity-message");
+          message.style.display = "block";
+        }
+      </script>
     </div>
-
   </div>
 
   <!-- Logo slot: replace logo.png with your 1024x1024 image file -->
