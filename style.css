@@ -255,7 +255,6 @@ body {
   display: flex;
   white-space: nowrap;
   width: max-content;
-  animation: ticker 22s linear infinite;
   will-change: transform;
   font-size: 0.9rem;
   font-weight: 500;
