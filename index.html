@@ -595,6 +595,25 @@
       requestAnimationFrame(frame);
     })();
 
+    (function () {
+      const inner = document.querySelector('.marquee-inner');
+      const setHTML = inner.innerHTML;
+      const setWidth = inner.scrollWidth;
+  
+      while (inner.scrollWidth < window.innerWidth * 3) {
+        inner.insertAdjacentHTML('beforeend', setHTML);
+      }
+  
+      let x = 0;
+      function tick() {
+        x -= 0.4;
+        if (Math.abs(x) >= setWidth) x = 0;
+        inner.style.transform = `translateX(${x}px)`;
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
+
   </script>
 </body>
 </html>
