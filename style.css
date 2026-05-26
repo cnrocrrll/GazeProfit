@@ -629,6 +629,49 @@ body {
   to   { opacity: 1; transform: none; }
 }
 
+/* ── For Creators ───────────────────────────────────────────────────── */
+.creators-section { padding: 0 var(--pad-x) 48px; }
+.creators-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+.creators-rule {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin-bottom: 36px;
+}
+.creators-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.creators-sub {
+  font-size: 0.9rem;
+  color: #aaaaaa;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.creators-btn {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 22px;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+.creators-btn:hover {
+  color: var(--white);
+  border-color: var(--border-hi);
+}
+
 /* ── Footer ─────────────────────────────────────────────────────────── */
 .site-footer {
   border-top: 1px solid var(--border);
