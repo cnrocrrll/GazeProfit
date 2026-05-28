@@ -717,3 +717,11 @@ body {
   .cta-pair .or-label { display: none; }
   .btn-hero { width: auto; min-width: 160px; justify-content: center; }
 }
+
+.scale-hint {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(253, 253, 253, 0.55);
+  letter-spacing: 0.08em;
+  margin: 48px 0;
+}
