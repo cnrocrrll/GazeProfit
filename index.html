@@ -69,7 +69,7 @@
       <div class="hero-metrics">
         <span class="accent"><strong>400k+</strong> local impressions</span>
         <span class="sep">|</span>
-        <span><strong>7-12</strong> creators deployed</span>
+        <span><strong>7-12</strong> creators. Vetted.</span>
         <span class="sep">|</span>
         <span><strong>Live in 14 days</strong></span>
       </div>
@@ -119,6 +119,11 @@
         <li><strong>Real footfall, real bookings</strong>. Not views. Not engagement metrics.</li>
         <li>14-27 polished videos, all <strong>funneling to you.</strong></li>
       </ul>
+    </div>
+
+    <div class="mg-pool-wrap" aria-hidden="true">
+      <svg id="mg-pool" class="mg-pool-svg" viewBox="0 0 320 320"></svg>
+      <p id="mg-pool-label" class="mg-label" style="text-align:center;margin-top:12px">Individual Creators<br><span class="mg-pool-sub">scattered visibility</span></p>
     </div>
   </section>
 
@@ -409,7 +414,7 @@
         </details>
 
         <details class="faq-item">
-          <summary>What if I want to go further?
+          <summary>What if I want more than just an organic creator campaign?
             <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </summary>
           <div class="faq-body">
@@ -614,6 +619,301 @@
         requestAnimationFrame(tick);
       }
       requestAnimationFrame(tick);
+    })();
+
+    // ── Pool diagram: V1 (random) → V2 (coordinated) loop ────────────────
+    (function () {
+      const svg   = document.getElementById('mg-pool');
+      const label = document.getElementById('mg-pool-label');
+      if (!svg || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const mk = (tag, attrs) => {
+        const e = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, String(v));
+        return e;
+      };
+      const A = '34,211,238';
+      const CX = 160, CY = 160, PR = 130;
+
+      // Pool boundary
+      svg.appendChild(mk('circle', {
+        cx: CX, cy: CY, r: PR, fill: 'none',
+        stroke: `rgba(${A},0.32)`, 'stroke-width': '1.2', 'stroke-dasharray': '4 5',
+      }));
+
+      // Sunflower / Fibonacci spiral — evenly spaced points in the disk
+      const POOL_N = 90;
+      const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+      const pool   = [];
+      let gen = 0;
+      while (pool.length < POOL_N) {
+        const r   = Math.sqrt((gen + 0.5) / (POOL_N + 4)) * (PR - 8);
+        const ang = gen * GOLDEN;
+        gen++;
+        if (r < 20) continue;
+        const x = CX + r * Math.cos(ang);
+        const y = CY + r * Math.sin(ang);
+        const el = mk('circle', { cx: x, cy: y, r: 2.8, fill: 'rgba(255,255,255,0.55)' });
+        svg.appendChild(el);
+        // act: 0 = white, 1 = cyan (interpolated during activation)
+        pool.push({ el, x0: x, y0: y, cx: x, cy: y, op: 0.55, sz: 2.8, glow: 0, act: 0, pulled: false, pidx: -1 });
+      }
+
+      // Central cyan orb (glow halo + body + core)
+      svg.appendChild(mk('circle', { cx: CX, cy: CY, r: 18, fill: `rgba(${A},0.20)` }));
+      svg.appendChild(mk('circle', { cx: CX, cy: CY, r: 10, fill: `rgba(${A},0.90)` }));
+      svg.appendChild(mk('circle', { cx: CX, cy: CY, r:  5, fill: `rgba(${A},1.0)`  }));
+
+      // Creator icons (max 12): connecting line + glow ring + solid body (white)
+      const ICO_N = 12;
+      const icons = [];
+      for (let i = 0; i < ICO_N; i++) {
+        const line = mk('line', {
+          x1: CX, y1: CY, x2: CX, y2: CY,
+          stroke: 'rgba(255,255,255,0.58)', 'stroke-width': '0.9', opacity: 0,
+        });
+        const ring = mk('circle', {
+          cx: CX, cy: CY, r: 7.5,
+          fill: 'none', stroke: 'rgba(255,255,255,0.80)', 'stroke-width': '1.2', opacity: 0,
+        });
+        const body = mk('circle', { cx: CX, cy: CY, r: 4.5, fill: 'rgba(255,255,255,1.0)', opacity: 0 });
+        svg.appendChild(line); svg.appendChild(ring); svg.appendChild(body);
+        icons.push({ line, ring, body, x: CX, y: CY, tx: CX, ty: CY });
+      }
+
+      function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+
+      const D = { gap: 0.6, fadein: 0.9, emit: 2.6, glow: 1.0, retract: 3.0, hold: 0.7, fadeout: 0.9 };
+
+      let phase = 'gap', phaseT = 0, version = 1, activeN = 0, targets = [];
+      let glowLevel = 0; // persists across glow→retract for smooth decay
+      let last = null;
+
+      function setup(v) {
+        version = v;
+        activeN = v === 1 ? 4 : 12;
+        glowLevel = 0;
+
+        pool.forEach(o => {
+          o.cx = o.x0; o.cy = o.y0; o.op = 0.55; o.sz = 2.8;
+          o.glow = 0; o.act = 0; o.pulled = false; o.pidx = -1;
+        });
+
+        targets = [];
+        for (let i = 0; i < activeN; i++) {
+          if (v === 1) {
+            const ang = (i / 4) * Math.PI * 2 + (Math.random() - 0.5) * 0.8;
+            const r   = 55 + Math.random() * 56;
+            targets.push({ x: CX + r * Math.cos(ang), y: CY + r * Math.sin(ang) });
+          } else {
+            const ang = (i / 12) * Math.PI * 2;
+            const r   = 78 + (i % 2) * 28;
+            targets.push({ x: CX + r * Math.cos(ang), y: CY + r * Math.sin(ang) });
+          }
+        }
+
+        if (v === 1) {
+          // V1: each icon pulls the nearest orbs within a fixed radius
+          targets.forEach((tgt, ii) => {
+            const nearby = pool
+              .filter(o => !o.pulled && Math.hypot(o.x0 - tgt.x, o.y0 - tgt.y) < 42)
+              .sort((a, b) => Math.hypot(a.x0 - tgt.x, a.y0 - tgt.y) - Math.hypot(b.x0 - tgt.x, b.y0 - tgt.y))
+              .slice(0, 5);
+            nearby.forEach(o => { o.pulled = true; o.pidx = ii; });
+          });
+        } else {
+          // V2: split pool by radial distance from centre
+          //   outer half (r > PR/2) → outer 6 icons (i % 2 === 1, r=106)
+          //   inner half (r ≤ PR/2) → inner 6 icons (i % 2 === 0, r=78)
+          const midR = PR / 2;
+          pool.forEach(o => {
+            const isOuterOrb = Math.hypot(o.x0 - CX, o.y0 - CY) > midR;
+            let best = 0, bestD = Infinity;
+            targets.forEach((tgt, ii) => {
+              if ((ii % 2 === 1) !== isOuterOrb) return; // match outer↔outer, inner↔inner
+              const d = Math.hypot(o.x0 - tgt.x, o.y0 - tgt.y);
+              if (d < bestD) { bestD = d; best = ii; }
+            });
+            o.pulled = true; o.pidx = best;
+          });
+        }
+
+        // V1: each icon emits one by one in a random order (staggered)
+        // V2: all simultaneous (coordinated feel)
+        const travelDur = D.emit * 0.44;
+        const stagger   = (v === 1 && activeN > 1) ? (D.emit - travelDur) / (activeN - 1) : 0;
+        const ranks     = Array.from({ length: activeN }, (_, k) => k);
+        if (v === 1) {
+          for (let k = ranks.length - 1; k > 0; k--) {
+            const j = Math.floor(Math.random() * (k + 1));
+            [ranks[k], ranks[j]] = [ranks[j], ranks[k]];
+          }
+        }
+        icons.forEach((ic, i) => {
+          ic.x = CX; ic.y = CY;
+          ic.tx = i < activeN ? targets[i].x : CX;
+          ic.ty = i < activeN ? targets[i].y : CY;
+          ic.emitDelay = i < activeN ? ranks[i] * stagger : 0;
+          ic.emitDur   = travelDur;
+          ic.line.setAttribute('opacity', 0);
+          ic.ring.setAttribute('opacity', 0);
+          ic.body.setAttribute('opacity', 0);
+          ic.ring.setAttribute('r', 7.5);
+        });
+
+        // V2: outer 6 (i%2===1, r=106) retract first pulling their orbs,
+        //     then inner 6 (i%2===0, r=78) retract pulling theirs.
+        // V1: all retract simultaneously.
+        if (v === 2) {
+          const rDur       = D.retract * 0.40;
+          const wave2Start = D.retract * 0.44;
+          icons.forEach((ic, i) => {
+            const outer     = i < activeN && i % 2 === 1;
+            ic.retractDelay = outer ? 0 : wave2Start;
+            ic.retractDur   = rDur;
+          });
+        } else {
+          icons.forEach(ic => { ic.retractDelay = 0; ic.retractDur = D.retract; });
+        }
+
+        if (label) label.innerHTML = v === 1
+          ? 'Individual Creators<br><span class="mg-pool-sub">scattered visibility</span>'
+          : 'Coordinated creator team<br><span class="mg-pool-sub">compounding attention</span>';
+      }
+
+      setup(1);
+
+      function frame(now) {
+        const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+        last = now; phaseT += dt;
+        let gOp = 1;
+
+        switch (phase) {
+
+          case 'gap':
+            gOp = 0;
+            if (phaseT >= D.gap) { phase = 'fadein'; phaseT = 0; }
+            break;
+
+          case 'fadein':
+            gOp = ease(Math.min(phaseT / D.fadein, 1));
+            if (phaseT >= D.fadein) { phase = 'emit'; phaseT = 0; }
+            break;
+
+          case 'emit': {
+            for (let i = 0; i < activeN; i++) {
+              const ic = icons[i];
+              // Each icon has its own delay; before its delay, p=0 (stays at centre)
+              const p = ease(Math.min(Math.max((phaseT - ic.emitDelay) / ic.emitDur, 0), 1));
+              ic.x = CX + (ic.tx - CX) * p;
+              ic.y = CY + (ic.ty - CY) * p;
+              ic.line.setAttribute('opacity', p * 0.72);
+              ic.ring.setAttribute('opacity', p);
+              ic.body.setAttribute('opacity', p);
+            }
+            if (phaseT >= D.emit) { phase = 'glow'; phaseT = 0; }
+            break;
+          }
+
+          case 'glow': {
+            // Single ramp-up to full brightness — no oscillation
+            glowLevel = ease(Math.min(phaseT / 0.55, 1));
+            for (let i = 0; i < activeN; i++) {
+              const ic = icons[i];
+              ic.ring.setAttribute('r', 7.5 + glowLevel * 3.8);
+              ic.ring.setAttribute('opacity', 0.5 + glowLevel * 0.45);
+              ic.body.setAttribute('opacity', 0.78 + glowLevel * 0.22);
+            }
+            pool.forEach(o => {
+              if (o.pulled) {
+                o.glow = glowLevel;
+                o.act  = glowLevel;
+                o.op   = 0.55 + o.glow * 0.52;
+                o.sz   = 2.8  + o.glow * 2.2;
+              }
+            });
+            if (phaseT >= D.glow) { phase = 'retract'; phaseT = 0; }
+            break;
+          }
+
+          case 'retract': {
+            const DECAY = 1.8;
+            glowLevel = Math.max(0, glowLevel - dt * DECAY);
+
+            // Each icon uses its own retractDelay/retractDur (staggered in V2)
+            for (let i = 0; i < activeN; i++) {
+              const ic   = icons[i];
+              const p    = ease(Math.min(Math.max((phaseT - ic.retractDelay) / ic.retractDur, 0), 1));
+              const fade = 1 - p;
+              ic.x = ic.tx + (CX - ic.tx) * p;
+              ic.y = ic.ty + (CY - ic.ty) * p;
+              ic.line.setAttribute('opacity', fade * 0.72);
+              ic.ring.setAttribute('r', 7.5 + glowLevel * 3.8);
+              ic.ring.setAttribute('opacity', (0.5 + glowLevel * 0.45) * fade);
+              ic.body.setAttribute('opacity', (0.78 + glowLevel * 0.22) * fade);
+            }
+            // Pool orbs follow their assigned icon with a slight lag
+            pool.forEach(o => {
+              if (o.pulled) {
+                o.glow = Math.max(0, o.glow - dt * DECAY * 0.7);
+                const ic      = icons[o.pidx];
+                const laggedP = ease(Math.min(Math.max((phaseT - ic.retractDelay - 0.15) / ic.retractDur, 0), 1));
+                o.cx = o.x0 + (CX - o.x0) * laggedP;
+                o.cy = o.y0 + (CY - o.y0) * laggedP;
+                const posFade = laggedP > 0.74 ? 1 - (laggedP - 0.74) / 0.26 : 1;
+                o.op = (0.55 + o.glow * 0.52) * posFade;
+                o.sz = 2.8 + o.glow * 2.2;
+              }
+            });
+            if (phaseT >= D.retract) { phase = 'hold'; phaseT = 0; }
+            break;
+          }
+
+          case 'hold':
+            for (let i = 0; i < activeN; i++) {
+              icons[i].line.setAttribute('opacity', 0);
+              icons[i].ring.setAttribute('opacity', 0);
+              icons[i].body.setAttribute('opacity', 0);
+            }
+            pool.forEach(o => { if (o.pulled) { o.op = 0; o.glow = 0; } });
+            if (phaseT >= D.hold) { phase = 'fadeout'; phaseT = 0; }
+            break;
+
+          case 'fadeout':
+            gOp = ease(Math.max(1 - phaseT / D.fadeout, 0));
+            if (phaseT >= D.fadeout) {
+              setup(version === 1 ? 2 : 1);
+              phase = 'fadein'; phaseT = 0; // skip gap — next version fades in immediately
+            }
+            break;
+        }
+
+        svg.setAttribute('opacity', gOp);
+        if (label) label.style.opacity = gOp;
+
+        // Render pool orbs — colour interpolates white→cyan based on activation
+        pool.forEach(o => {
+          o.el.setAttribute('cx', o.cx);
+          o.el.setAttribute('cy', o.cy);
+          o.el.setAttribute('r',  o.sz);
+          const rr = Math.round(255 + (34  - 255) * o.act);
+          const gg = Math.round(255 + (211 - 255) * o.act);
+          const bb = Math.round(255 + (238 - 255) * o.act);
+          o.el.setAttribute('fill', `rgba(${rr},${gg},${bb},${Math.min(1, Math.max(0, o.op)).toFixed(2)})`);
+        });
+
+        for (let i = 0; i < activeN; i++) {
+          const ic = icons[i];
+          ic.ring.setAttribute('cx', ic.x); ic.ring.setAttribute('cy', ic.y);
+          ic.body.setAttribute('cx', ic.x); ic.body.setAttribute('cy', ic.y);
+          ic.line.setAttribute('x2', ic.x); ic.line.setAttribute('y2', ic.y);
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
     })();
 
   </script>
