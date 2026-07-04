@@ -289,7 +289,7 @@ body {
 }
 
 .mg-pool-wrap {
-  max-width: 320px;
+  max-width: 260px;
   margin: 52px auto 0;
 }
 .mg-pool-svg {
@@ -335,6 +335,65 @@ body {
   text-shadow: 0 0 8px rgba(34,211,238,0.6);
 }
 .dash-list strong { color: var(--muted); font-weight: 500; }
+
+/* ── Why GazeProfit ─────────────────────────────────────────────────── */
+.why-title {
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 32px;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.why-divider {
+  font-size: 1.3rem;
+  color: var(--dim);
+}
+.why-col-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.why-col-label--accent { color: var(--accent); }
+.why-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.why-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 0.98rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
+}
+.why-list li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--dim);
+}
+.why-list--accent li { color: var(--white); font-weight: 500; }
+.why-list--accent li::before { content: '✓'; color: var(--accent); }
+
+@media (max-width: 560px) {
+  .why-title { font-size: 1.05rem; }
+  .why-grid { grid-template-columns: 1fr; gap: 28px; }
+  .why-col { display: flex; flex-direction: column; align-items: center; }
+  .why-col-label { text-align: center; }
+  .why-divider { transform: rotate(90deg); justify-self: center; }
+}
 
 /* ── Funnel ─────────────────────────────────────────────────────────── */
 .funnel-section .eyebrow {
